@@ -15,12 +15,12 @@ public class NIOClass {
 		Path path = Paths.get("client");
 		Path path1 = Path.of("client" + File.separator + "1.txt");
 
-//		path.toAbsolutePath().iterator().forEachRemaining(System.out::println);
-//		System.out.println("1.txt exists: " + Files.exists(path1));
+		path.toAbsolutePath().iterator().forEachRemaining(System.out::println);
+		System.out.println("1.txt exists: " + Files.exists(path1));
 
 		// создание
-		Path path2 = Path.of("client", "dir1", "dir2", "1.txt");
-		Path pathDir2 = Path.of("client", "dir1", "dir2");
+//		Path path2 = Path.of("client", "dir1", "dir2", "1.txt");
+//		Path pathDir2 = Path.of("client", "dir1", "dir2");
 //		if (!Files.exists(path2)) {
 //			Files.createFile(path2);
 //		}
@@ -100,33 +100,33 @@ public class NIOClass {
 //			System.out.print((char) b);
 //		}
 
-		RandomAccessFile raf = new RandomAccessFile("client" + File.separator + "1.txt", "rw");
-		FileChannel fileChannel = raf.getChannel();
-		ByteBuffer buffer = ByteBuffer.allocate(55);
-		System.out.println(buffer);
-		System.out.println(fileChannel.size());
-		int bytesRead = fileChannel.read(buffer);
-		System.out.println(buffer);
-
-		while (bytesRead != -1) {
-			buffer.flip(); // перевод в режим чтения из буфера
-			while (buffer.hasRemaining()) {
-				System.out.print((char) buffer.get());
-			}
-			buffer.clear();
-			bytesRead = fileChannel.read(buffer);
-			System.out.println("---");
-		}
-
-		String data = "new String hello wolrd";
-		buffer.put(data.getBytes(StandardCharsets.UTF_8));
-
-		buffer.flip();
-		fileChannel.position(0);
-		while (buffer.hasRemaining()) {
-			fileChannel.write(buffer);
-		}
-
-		raf.close();
+//		RandomAccessFile raf = new RandomAccessFile("client" + File.separator + "1.txt", "rw");
+//		FileChannel fileChannel = raf.getChannel();
+//		ByteBuffer buffer = ByteBuffer.allocate(55);
+//		System.out.println(buffer);
+//		System.out.println(fileChannel.size());
+//		int bytesRead = fileChannel.read(buffer);
+//		System.out.println(buffer);
+//
+//		while (bytesRead != -1) {
+//			buffer.flip(); // перевод в режим чтения из буфера
+//			while (buffer.hasRemaining()) {
+//				System.out.print((char) buffer.get());
+//			}
+//			buffer.clear();
+//			bytesRead = fileChannel.read(buffer);
+//			System.out.println("---");
+//		}
+//
+//		String data = "new String hello wolrd";
+//		buffer.put(data.getBytes(StandardCharsets.UTF_8));
+//
+//		buffer.flip();
+//		fileChannel.position(0);
+//		while (buffer.hasRemaining()) {
+//			fileChannel.write(buffer);
+//		}
+//
+//		raf.close();
 	}
 }
