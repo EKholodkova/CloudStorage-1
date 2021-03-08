@@ -10,6 +10,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NioTelnetServer {
 	private final ByteBuffer buffer = ByteBuffer.allocate(512);
@@ -87,44 +89,24 @@ public class NioTelnetServer {
 			} else if ("ls".equals(command)) {
 				sendMessage(getFilesList().concat("\n"), selector);
 			} else if (command.contains("touch")){
-				String fileName = command.substring("touch".length());
-				fileName = fileName.trim();
+				String fileName = getArgFromCommand(command, "touch");
 				sendMessage(createFile(fileName).concat("\n"), selector);
 			} else if (command.contains("mkdir")) {
-				String dir = command.substring("mkdir".length());
-				dir = dir.trim();
+				String dir = getArgFromCommand(command, "mkdir");
 				sendMessage(createDir(dir).concat("\n"), selector);
 			} else if (command.contains("cd")) {
-				String path = command.substring("cd".length());
-				path = path.trim();
+				String path = getArgFromCommand(command, "cd");
 				sendMessage(changeDir(path).concat("\n"), selector);
 			} else if (command.contains("rm")) {
-				String obj = command.substring("rm".length());
-				obj = obj.trim();
+				String obj = getArgFromCommand(command, "rm");
 				sendMessage(removeObj(obj).concat("\n"), selector);
 			} else if (command.contains("copy")) {
-				String[] lines = command.split(" ");
-				String src = null;
-				String target = null;
-				int i = 1;
-				sendMessage(lines.length + "".concat("\n"), selector);
-				for (; i < lines.length; i++) {
-					if(!lines[i].isEmpty()) {
-						src = lines[i];
-						i++;
-						break;
-					}
-				}
-				for(; i < lines.length; i++) {
-					if(!lines[i].isEmpty()) {
-						target = lines[i];
-						break;
-					}
-				}
+				List<String> args = getTwoArgsFromCommand(command);
+				String src = args.get(0);
+				String target = args.get(1);
 				sendMessage(copyFile(src, target).concat("\n"), selector);
 			} else if (command.contains("cat")) {
-				String fileName = command.substring("cat".length());
-				fileName = fileName.trim();
+				String fileName = getArgFromCommand(command, "cat");
 				sendMessage(showFileContent(fileName).concat("\n"), selector);
 			} else if ("exit".equals(command)) {
 				System.out.println("Client logged out. IP: " + channel.getRemoteAddress());
@@ -222,6 +204,36 @@ public class NioTelnetServer {
 
 	private String getFilesList() {
 		return String.join("\t", new File(currentDir.toString()).list());
+	}
+
+	private String getArgFromCommand(String inputStr, String command) {
+		String arg = inputStr.substring(command.length());
+		arg = arg.trim();
+		return arg;
+	}
+
+	private List<String> getTwoArgsFromCommand(String inputStr) {
+		String[] lines = inputStr.split(" ");
+		List<String> args = new ArrayList<>();
+		String src = null;
+		String target = null;
+		int i = 1;
+		for (; i < lines.length; i++) {
+			if(!lines[i].isEmpty()) {
+				src = lines[i];
+				args.add(src);
+				i++;
+				break;
+			}
+		}
+		for(; i < lines.length; i++) {
+			if(!lines[i].isEmpty()) {
+				target = lines[i];
+				args.add(target);
+				break;
+			}
+		}
+		return args;
 	}
 
 	private void sendMessage(String message, Selector selector) throws IOException {
